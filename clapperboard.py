@@ -2,7 +2,13 @@ import sys
 import subprocess
 
 inputFile = sys.argv[1]
-outputFile = sys.argv[2]
+
+dryRun = False
+outputFile = None
+if (inputFile == "--dry-run"):
+    dryRun = True
+else:
+    outputFile = sys.argv[2]
 
 # prepare command
 output = subprocess.Popen(["ffprobe -v quiet -show_format -show_streams '" +
@@ -34,6 +40,8 @@ if offset == 0:
     print "No audio offset."
     exit()
 
+if dryRun:
+    exit()
 # prepare conversion
 output = subprocess.Popen(["ffmpeg -i '" + inputFile + "' -itsoffset " +
                            offset + " -i '" + inputFile + "' -map 0:v " +
@@ -41,4 +49,4 @@ output = subprocess.Popen(["ffmpeg -i '" + inputFile + "' -itsoffset " +
                            " -acodec copy '" + outputFile + "'"],
                           stdout=subprocess.PIPE, shell=True).communicate()[0]
 
-print "Converted file (check ffmpeg status.)"
+print "Converted file."
